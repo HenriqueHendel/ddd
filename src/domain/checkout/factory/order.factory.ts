@@ -1,16 +1,16 @@
-import Order from "../entity/order";
-import OrderItem from "../entity/order_item";
+import Order from '../entity/order'
+import OrderItem from '../entity/order_item'
 
 interface OrderFactoryProps {
-  id: string;
-  customerId: string;
+  id: string
+  customerId: string
   items: {
-    id: string;
-    name: string;
-    productId: string;
-    quantity: number;
-    price: number;
-  }[];
+    id: string
+    name: string
+    productId: string
+    quantity: number
+    price: number
+  }[]
 }
 
 export default class OrderFactory {
@@ -21,11 +21,10 @@ export default class OrderFactory {
         item.name,
         item.price,
         item.productId,
-        item.quantity
-      );
-    });
-    
-    return new Order(props.id, props.customerId, items);
+        item.quantity,
+      )
+    })
 
+    return new Order(props.id, props.customerId, items)
   }
 }
