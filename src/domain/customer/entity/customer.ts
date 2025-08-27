@@ -1,3 +1,6 @@
+import EventDispatcher from '../../@shared/event/event-dispatcher'
+import { AddressChangedEvent } from '../event/address-changed.event'
+import { DisplayMessageWhenCustomerAddressIsChangedHandler } from '../event/handler/display-message-when-address-is-changed.handler'
 import Address from '../value-object/address'
 
 export default class Customer {
@@ -6,10 +9,14 @@ export default class Customer {
   private _address!: Address
   private _active: boolean = false
   private _rewardPoints: number = 0
+  private _eventDispatcher?: EventDispatcher
 
-  constructor(id: string, name: string) {
+  constructor(id: string, name: string, eventDispatcher?: EventDispatcher) {
     this._id = id
     this._name = name
+    if (eventDispatcher) {
+      this._eventDispatcher = eventDispatcher
+    }
     this.validate()
   }
 
@@ -45,6 +52,19 @@ export default class Customer {
 
   changeAddress(address: Address) {
     this._address = address
+
+    const event = new AddressChangedEvent({
+      customerId: this._id,
+      customerName: this._name,
+      address: address.toString(),
+    })
+
+    const eventHadler = new DisplayMessageWhenCustomerAddressIsChangedHandler()
+
+    if (this._eventDispatcher) {
+      this._eventDispatcher.register(event.constructor.name, eventHadler)
+      this._eventDispatcher.notify(event)
+    }
   }
 
   isActive(): boolean {
