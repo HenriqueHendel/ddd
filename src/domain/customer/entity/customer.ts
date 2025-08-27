@@ -1,5 +1,8 @@
 import EventDispatcher from '../../@shared/event/event-dispatcher'
 import { AddressChangedEvent } from '../event/address-changed.event'
+import { CustomerCreatedEvent } from '../event/customer-created.event'
+import { DisplayFirstMessageWhenCustomerIsCreatedHandler } from '../event/handler/display-message-1-when-customer-is-created.handler'
+import { DisplaySecondMessageWhenCustomerIsCreatedHandler } from '../event/handler/display-message-2-when-customer-is-created.handler'
 import { DisplayMessageWhenCustomerAddressIsChangedHandler } from '../event/handler/display-message-when-address-is-changed.handler'
 import Address from '../value-object/address'
 
@@ -14,10 +17,27 @@ export default class Customer {
   constructor(id: string, name: string, eventDispatcher?: EventDispatcher) {
     this._id = id
     this._name = name
+    this.validate()
     if (eventDispatcher) {
       this._eventDispatcher = eventDispatcher
+
+      const customerCreatedEvent = new CustomerCreatedEvent()
+      const displayFirstMessageHandler =
+        new DisplayFirstMessageWhenCustomerIsCreatedHandler()
+      const displaySecondMessageHandler =
+        new DisplaySecondMessageWhenCustomerIsCreatedHandler()
+
+      this._eventDispatcher.register(
+        customerCreatedEvent.constructor.name,
+        displayFirstMessageHandler,
+      )
+      this._eventDispatcher.register(
+        customerCreatedEvent.constructor.name,
+        displaySecondMessageHandler,
+      )
+
+      this._eventDispatcher.notify(customerCreatedEvent)
     }
-    this.validate()
   }
 
   get id(): string {
