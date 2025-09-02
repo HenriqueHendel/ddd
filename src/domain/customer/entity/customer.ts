@@ -1,4 +1,6 @@
+import { AbstractEntity } from '../../@shared/entity/entity.abstract'
 import EventDispatcher from '../../@shared/event/event-dispatcher'
+import { NotificationError } from '../../@shared/notification/notification.error'
 import { AddressChangedEvent } from '../event/address-changed.event'
 import { CustomerCreatedEvent } from '../event/customer-created.event'
 import { DisplayFirstMessageWhenCustomerIsCreatedHandler } from '../event/handler/display-message-1-when-customer-is-created.handler'
@@ -6,8 +8,7 @@ import { DisplaySecondMessageWhenCustomerIsCreatedHandler } from '../event/handl
 import { DisplayMessageWhenCustomerAddressIsChangedHandler } from '../event/handler/display-message-when-address-is-changed.handler'
 import Address from '../value-object/address'
 
-export default class Customer {
-  private _id: string
+export default class Customer extends AbstractEntity {
   private _name: string = ''
   private _address!: Address
   private _active: boolean = false
@@ -15,9 +16,15 @@ export default class Customer {
   private _eventDispatcher?: EventDispatcher
 
   constructor(id: string, name: string, eventDispatcher?: EventDispatcher) {
+    super()
     this._id = id
     this._name = name
     this.validate()
+
+    if (this.notififcation.hasErrors()) {
+      throw new NotificationError(this.notififcation.errors())
+    }
+
     if (eventDispatcher) {
       this._eventDispatcher = eventDispatcher
 
@@ -54,10 +61,16 @@ export default class Customer {
 
   validate() {
     if (this._id.length === 0) {
-      throw new Error('Id is required')
+      this.notififcation.addError({
+        message: 'Id is required',
+        context: 'customer',
+      })
     }
     if (this._name.length === 0) {
-      throw new Error('Name is required')
+      this.notififcation.addError({
+        message: 'Name is required',
+        context: 'customer',
+      })
     }
   }
 
