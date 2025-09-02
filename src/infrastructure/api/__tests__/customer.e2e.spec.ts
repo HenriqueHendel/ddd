@@ -82,5 +82,15 @@ describe('End to end test for customer', () => {
     expect(customer2.address.number).toBe(1234)
     expect(customer2.address.city).toBe('SSA')
     expect(customer2.address.zip).toBe('123')
+
+    const listResponseXML = await request(app)
+      .get('/customer')
+      .set('Accept', 'application/xml')
+      .send()
+
+    expect(listResponseXML.status).toBe(200)
+    expect(listResponseXML.text).toContain(
+      '<?xml version="1.0" encoding="UTF-8"?>',
+    )
   })
 })
