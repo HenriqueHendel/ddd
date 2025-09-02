@@ -6,6 +6,7 @@ import { CustomerCreatedEvent } from '../event/customer-created.event'
 import { DisplayFirstMessageWhenCustomerIsCreatedHandler } from '../event/handler/display-message-1-when-customer-is-created.handler'
 import { DisplaySecondMessageWhenCustomerIsCreatedHandler } from '../event/handler/display-message-2-when-customer-is-created.handler'
 import { DisplayMessageWhenCustomerAddressIsChangedHandler } from '../event/handler/display-message-when-address-is-changed.handler'
+import { CustomerValidatorFactory } from '../factory/customer.validator.factory'
 import Address from '../value-object/address'
 
 export default class Customer extends AbstractEntity {
@@ -60,18 +61,7 @@ export default class Customer extends AbstractEntity {
   }
 
   validate() {
-    if (this._id.length === 0) {
-      this.notififcation.addError({
-        message: 'Id is required',
-        context: 'customer',
-      })
-    }
-    if (this._name.length === 0) {
-      this.notififcation.addError({
-        message: 'Name is required',
-        context: 'customer',
-      })
-    }
+    CustomerValidatorFactory.create().validate(this)
   }
 
   changeName(name: string) {
